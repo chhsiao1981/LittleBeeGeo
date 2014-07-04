@@ -9,7 +9,7 @@ cached_data =
     * name: \服貿x農業
     * name: \服貿x食安
     * name: \政府x民間
-    * name: \割闌尾
+    * name: \立委
     * name: \監督條例相關
     * name: \公民憲政會議
     * name: \核四
