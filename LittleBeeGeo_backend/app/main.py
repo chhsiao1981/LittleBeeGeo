@@ -13,6 +13,7 @@ import time
 import ujson as json
 import sys
 import argparse
+from beaker.middleware import SessionMiddleware
 
 from app import cfg
 from app import util
@@ -24,7 +25,39 @@ from app.http_handlers.p_img_info_handler import p_img_info_handler
 from app.http_handlers.g_ad_data_handler import g_ad_data_handler
 from app.http_handlers.g_thumbnail_handler import g_thumbnail_handler
 
+session_opts = {
+    'session.cookie_expires': True,
+    'session.encrypt_key': 'please use a random key and keep it secret!',
+    'session.httponly': True,
+    'session.timeout': 3600 * 24,  # 1 day
+    'session.type': 'cookie',
+    'session.validate_key': True,
+}
+
 app = Bottle()
+app = SessionMiddleware(app, session_opts)
+
+@app.post('/login')
+def login():
+    """Authenticate users"""
+    params = _process_params()
+    username = post_get('username')
+    password = post_get('password')
+    aaa.login(username, password, success_redirect='/', fail_redirect='/login')
+
+
+@bottle.route('/user_is_anonymous')
+def user_is_anonymous():
+    if aaa.user_is_anonymous:
+        return 'true'
+
+    return 'false'
+
+
+@bottle.route('/logout')
+def logout():
+    aaa.logout(success_redirect='/login')
+
 
 @app.get('/')
 def dummy():
@@ -123,6 +156,9 @@ def _log_entry(data=''):
     if request.query_string or request.content_length > 0:
         cfg.logger.debug('log_entry_data: url: %s method: %s remote_route: %s query_string: %s content_type: %s content_length: %s content: %s', request.url, request.method, request.remote_route, request.query_string, request.content_type, request.content_length, data)
 
+
+def _process_params():
+    return dict(request.params)
 
 def _process_json_request():
     return util.json_loads(_process_body_request())

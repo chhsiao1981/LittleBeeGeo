@@ -16,6 +16,7 @@ cached_data =
     * name: \公投
     * name: \自由經濟示範區
     * name: \服貿
+    * name: \中國
     * name: \其他
   ]
   data_timestamp: new Date!getTime!
